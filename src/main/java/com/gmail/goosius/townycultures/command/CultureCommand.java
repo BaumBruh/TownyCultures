@@ -65,20 +65,18 @@ public class CultureCommand implements CommandExecutor, TabCompleter {
 			showCultureHelp(player);
 			return;
 		}	
-		
-		if (!player.hasPermission(TownyCulturesPermissionNodes.TOWNYCULTURES_COMMAND_SET_TOWN_CULTURE.getNode())) {
-			Messaging.sendErrorMsg(player, Translation.of("msg_err_command_disable"));
-			return;
-		}
-
-		Resident resident = TownyUniverse.getInstance().getResident(player.getName());
-		if (resident == null)
-			return;
-
-		if(!resident.hasTown())
-			player.sendMessage(Translation.of("msg_err_command_disable"));
-
 		try {
+			if (!player.hasPermission(TownyCulturesPermissionNodes.TOWNYCULTURES_COMMAND_SET_TOWN_CULTURE.getNode()))
+				throw new Exception(Translation.of("msg_err_command_disable"));
+	
+			Resident resident = TownyUniverse.getInstance().getResident(player.getName());
+			if (resident == null)
+				return;
+	
+			if(!resident.hasTown())
+				throw new Exception(Translation.of("msg_err_command_disable"));
+
+		
 			Town town = resident.getTown();
 
 			StringBuilder stringBuilder = new StringBuilder();
@@ -87,19 +85,18 @@ public class CultureCommand implements CommandExecutor, TabCompleter {
 				stringBuilder.append(" ").append(args[i]);
 			}
 			String newCulture = stringBuilder.toString();
-			newCulture = CultureUtil.validateCultureName(newCulture);
-			if (newCulture == null) {
-				Messaging.sendErrorMsg(player, Translation.of("msg_err_invalid_string_town_culture_not_set"));
-			} else {
-				//Set town culture
-				TownMetaDataController.setTownCulture(town, newCulture);
-				if (newCulture.isEmpty())
-					TownyMessaging.sendPrefixedTownMessage(town, Translation.of("msg_culture_removed"));
-				else
-					TownyMessaging.sendPrefixedTownMessage(town, Translation.of("msg_town_culture_set", StringMgmt.capitalize(newCulture)));
-			}
+			newCulture = CultureUtil.validateCultureName(newCulture); // Can throw Exception if not a valid name, caught below.
+			
+			//Set town culture
+			TownMetaDataController.setTownCulture(town, newCulture);
+			if (newCulture.isEmpty())
+				TownyMessaging.sendPrefixedTownMessage(town, Translation.of("msg_culture_removed"));
+			else
+				TownyMessaging.sendPrefixedTownMessage(town, Translation.of("msg_town_culture_set", StringMgmt.capitalize(newCulture)));
 		} catch (NotRegisteredException e) {
 			//We probably won't get here as we already checked for resident
+		} catch (Exception e) {
+			Messaging.sendErrorMsg(player, e.getMessage());
 		}
 	}
 }
