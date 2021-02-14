@@ -2,9 +2,9 @@ package com.gmail.goosius.townycultures.utils;
 
 import com.gmail.goosius.townycultures.metadata.TownMetaDataController;
 import com.gmail.goosius.townycultures.settings.TownyCulturesSettings;
+import com.gmail.goosius.townycultures.settings.Translation;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Translation;
 import com.palmergames.bukkit.util.NameValidation;
 
 public class CultureUtil {
